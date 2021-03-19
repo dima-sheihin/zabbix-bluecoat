@@ -59,6 +59,7 @@ if ( keys ( %hosts ) >= 0 ) {
         system( "$ZBBX_SENDER -z $ZBBX_SERVER -s $hostname -k $zbbx_top -o \'$hosts{$hostid}->{tcpTOPState}\'" );
         }
       }
+    unlink($hosts{$hostid}->{f_name}) or die "Can't delete $hosts{$hostid}->{f_name} $!\n";
     }
   }
 # ------------------------------------------------------------------------
@@ -96,7 +97,7 @@ $tcpConnState{tcpState}{closing}=0;
 $tcpConnState{tcpState}{timeWait}=0;
 $tcpConnState{tcpState}{deleteTCB}=0;
 if ( defined $hosts{$hostid}->{f_name} and -e $hosts{$hostid}->{f_name} ) {
-  open (REQ, $hosts{$hostid}->{f_name} ) or die SaveLog("Can't open $hosts{$hostid}->{f_name}");
+  open (REQ, $hosts{$hostid}->{f_name} ) or die "Can't open $hosts{$hostid}->{f_name}";
   while (<REQ>) {
     chomp($_);
     my ( $ip, $a , $b ,$tcpConnState ) = split (" ", lc($_));
@@ -122,6 +123,7 @@ if ( defined $hosts{$hostid}->{f_name} and -e $hosts{$hostid}->{f_name} ) {
       elsif ( $tcpConnState eq "deletetcb(12)" )  { $tcpConnState{tcpState}{deleteTCB}++;   }
       }
     }
+  close(REQ);
   }
 my $tcpConnState;
 if ( defined $tcpConnState{tcpState} and scalar ( keys ( $tcpConnState{tcpState} ) ) >= 0 ) {
@@ -142,7 +144,7 @@ my %tcpTOPState;
 my $tcpTOPState1;
 
 if ( defined $hosts{$hostid}->{f_name} and -e $hosts{$hostid}->{f_name} ) {
-  open (REQ, "$hosts{$hostid}->{f_name}") or die SaveLog("Can't open $hosts{$hostid}->{f_name}");
+  open (REQ, "$hosts{$hostid}->{f_name}") or die "Can't open $hosts{$hostid}->{f_name}";
   while (<REQ>) {
     chomp($_);
     my ( $ip, $a , $b ,$tcpConnState ) = split (" ", lc($_));
@@ -174,6 +176,7 @@ if ( defined $hosts{$hostid}->{f_name} and -e $hosts{$hostid}->{f_name} ) {
         }
       }
     }
+  close(REQ);
   }
 my $i;
 if ( defined $tcpTOPState{remote} and scalar ( keys ( $tcpTOPState{remote} ) ) >= 0 ) {
